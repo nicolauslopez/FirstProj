@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 # Create your views here.
 
 
@@ -8,8 +8,8 @@ def signup(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
-            # log the user in
+            user = form.save()
+            login(request, user)
             return redirect('polls:index')
     else:
         form = UserCreationForm()
@@ -28,3 +28,9 @@ def login_view(request):
     else:
         form = AuthenticationForm()
     return render(request, "accounts/login.html", {'form': form}, )
+
+
+def logout_view(request):
+    if request.method == 'POST':
+        logout(request)
+        return redirect('accounts:login')
